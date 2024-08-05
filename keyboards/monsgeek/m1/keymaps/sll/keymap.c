@@ -14,9 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "color.h"
 #include "keycodes.h"
 #include "modifiers.h"
 #include "process_key_override.h"
+#include "rgb_matrix.h"
 #include QMK_KEYBOARD_H
 
 enum __layers {
@@ -72,3 +74,23 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 };
 #endif
 
+#if defined(RGB_MATRIX_ENABLE)
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    if (get_highest_layer(layer_state) > 0) {
+        uint8_t layer = get_highest_layer(layer_state);
+
+        for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
+            for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
+                uint8_t index = g_led_config.matrix_co[row][col];
+
+                if (index >= led_min && index < led_max && index != NO_LED) {
+                    if (keymap_key_to_keycode(layer, (keypos_t){col,row}) <= KC_TRNS) { // all transparent keys
+                        rgb_matrix_set_color(index, RGB_OFF);
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+#endif
