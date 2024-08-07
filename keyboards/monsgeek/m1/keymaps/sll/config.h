@@ -1,1 +1,2 @@
 #define RGB_MATRIX_TIMEOUT 600000 // 10min
+#define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CUSTOM_my_static_pattern
